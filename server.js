@@ -5,12 +5,15 @@ const session = require('express-session');
 const passport = require('passport');
 const flash = require('connect-flash');
 const dotenv = require('dotenv');
+const path = require('path');
 
 dotenv.config();
 
 require('./config/passport')(passport);
 
 const app = express();
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 mongoose
   .connect(process.env.MONGODB_URI)
