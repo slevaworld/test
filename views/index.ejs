@@ -1,0 +1,83 @@
+<main class="text-center">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-5xl md:text-6xl font-extrabold text-white mb-4">
+            AI Image Generator
+        </h1>
+        <p class="text-lg md:text-xl text-gray-400 mb-8">
+            Create amazing images using artificial intelligence
+        </p>
+
+        <form id="generateForm" action="/generate" method="POST" class="card p-6 rounded-xl shadow-lg">
+            <div class="mb-4">
+                <input
+                    type="text"
+                    name="prompt"
+                    id="prompt"
+                    class="w-full p-4 rounded-lg border border-gray-700 bg-gray-900 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Describe what you want to generate (e.g., a cute cat wearing a hat)"
+                    required
+                />
+            </div>
+            <button
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+            >
+                <span id="buttonText">Generate image</span>
+                <div id="spinner" class="hidden w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </button>
+        </form>
+
+        <div class="mt-8 hidden" id="progressBar">
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div class="bg-blue-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="mt-12 text-left">
+            <% if (user) { %>
+                <h2 class="text-3xl font-extrabold mb-4 text-white">Your generated images</h2>
+                <% if (user.generatedImages.length > 0) { %>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <% user.generatedImages.forEach(image => { %>
+                            <div class="card rounded-xl shadow-lg overflow-hidden p-4 flex flex-col transform transition-transform hover:scale-105">
+                                <img src="<%= image.imageUrl %>" alt="<%= image.prompt %>" class="w-full h-auto object-cover rounded-lg mb-4">
+                                <p class="text-gray-400 text-sm italic flex-grow mb-4">
+                                    "<%= image.prompt %>"
+                                </p>
+                                <a href="<%= image.imageUrl %>" download class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 text-center">
+                                    Download
+                                </a>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <p class="text-gray-400 italic">You haven’t generated any images yet. Try it now!</p>
+                <% } %>
+            <% } else { %>
+                <h2 class="text-3xl font-extrabold mb-4 text-white">Latest generated images</h2>
+                <% if (typeof guestGenerations !== 'undefined' && guestGenerations > 0) { %>
+                    <p class="text-gray-400 mb-4">
+                        As a guest, you have generated <%= guestGenerations %> out of 3 allowed images.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <% if (tempImages && tempImages.length > 0) { %>
+                            <% tempImages.forEach(image => { %>
+                                <div class="card rounded-xl shadow-lg overflow-hidden p-4 flex flex-col transform transition-transform hover:scale-105">
+                                    <img src="<%= image.imageUrl %>" alt="<%= image.prompt %>" class="w-full h-auto object-cover rounded-lg mb-4">
+                                    <p class="text-gray-400 text-sm italic flex-grow mb-4">
+                                        "<%= image.prompt %>"
+                                    </p>
+                                    <a href="<%= image.imageUrl %>" download class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 text-center">
+                                        Download
+                                    </a>
+                                </div>
+                            <% }); %>
+                        <% } %>
+                    </div>
+                <% } else { %>
+                    <p class="text-gray-400 italic">You haven’t generated any images yet. Try it now!</p>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+</main>

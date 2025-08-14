@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>slevas.world</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --header-bg: #161b22;
+            --card-bg: #161b22;
+            --placeholder-color: #8892b0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        body.light-theme {
+            --bg-color: #f0f2f5;
+            --text-color: #24292e;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --placeholder-color: #a8a8a8;
+        }
+        .glow-text {
+            text-shadow: 0 0 5px #00aaff, 0 0 10px #00aaff;
+        }
+        .bg-gradient-custom {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+        }
+        .bg-gradient-custom-hover:hover {
+            background: linear-gradient(to right, #0072ff, #00c6ff);
+        }
+        header {
+            background-color: var(--header-bg);
+        }
+        .card {
+            background-color: var(--card-bg);
+        }
+        .placeholder-gray-500::placeholder {
+            color: var(--placeholder-color);
+        }
+        .text-white { color: var(--text-color); }
+        .bg-gray-800 { background-color: var(--card-bg); }
+        .text-gray-400 { color: var(--placeholder-color); }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <header class="p-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="text-3xl font-extrabold text-white tracking-wider glow-text">
+                slevas.world
+            </a>
+            <nav class="flex items-center space-x-4">
+                <% if (user) { %>
+                    <a href="/settings" class="text-white hover:text-blue-400 transition-colors duration-200">
+                        Settings
+                    </a>
+                    <a href="/auth/logout" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200">
+                        Logout
+                    </a>
+                <% } else { %>
+                    <a href="/auth/login" class="text-white hover:text-blue-400 transition-colors duration-200">
+                        Login
+                    </a>
+                    <a href="/auth/register" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200">
+                        Register
+                    </a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container mx-auto p-6 flex-grow">
+        <% if (success_msg && success_msg.length > 0) { %>
+            <div class="bg-green-600 text-white p-4 rounded-lg mb-4 text-center">
+                <%= success_msg %>
+            </div>
+        <% } %>
+        <% if (error_msg && error_msg.length > 0) { %>
+            <div class="bg-red-600 text-white p-4 rounded-lg mb-4 text-center">
+                <%= error_msg %>
+            </div>
+        <% } %>
+        <%- body %>
+    </div>
+
+    <footer class="bg-transparent p-4 text-center text-gray-500">
+        &copy; 2024 slevas.world. All rights reserved.
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('generateForm');
+            if (form) {
+                form.addEventListener('submit', () => {
+                    const button = form.querySelector('button[type="submit"]');
+                    const spinner = document.getElementById('spinner');
+                    const progressBar = document.getElementById('progressBar');
+
+                    button.disabled = true;
+                    button.innerHTML = '<div class="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Generating...';
+                    spinner.classList.remove('hidden');
+                    progressBar.classList.remove('hidden');
+
+                    let width = 0;
+                    const interval = setInterval(() => {
+                        width += 5;
+                        if (width > 100) {
+                            clearInterval(interval);
+                        } else {
+                            progressBar.style.width = width + '%';
+                            progressBar.setAttribute('aria-valuenow', width);
+                        }
+                    }, 500);
+                });
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const storedTheme = localStorage.getItem('theme');
+
+            if (storedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                const darkIcon = document.getElementById('theme-toggle-dark-icon');
+                const lightIcon = document.getElementById('theme-toggle-light-icon');
+                if(darkIcon) darkIcon.classList.add('hidden');
+                if(lightIcon) lightIcon.classList.remove('hidden');
+            } else {
+                const darkIcon = document.getElementById('theme-toggle-dark-icon');
+                const lightIcon = document.getElementById('theme-toggle-light-icon');
+                if(darkIcon) darkIcon.classList.remove('hidden');
+                if(lightIcon) lightIcon.classList.add('hidden');
+            }
+
+            if(themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', () => {
+                    const currentTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+
+                    if (currentTheme === 'dark') {
+                        document.body.classList.add('light-theme');
+                        localStorage.setItem('theme', 'light');
+                        document.getElementById('theme-toggle-dark-icon').classList.add('hidden');
+                        document.getElementById('theme-toggle-light-icon').classList.remove('hidden');
+                    } else {
+                        document.body.classList.remove('light-theme');
+                        localStorage.setItem('theme', 'dark');
+                        document.getElementById('theme-toggle-dark-icon').classList.remove('hidden');
+                        document.getElementById('theme-toggle-light-icon').classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
